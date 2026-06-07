@@ -7,7 +7,7 @@ export default function Home() {
   const { i18n } = useTranslation();
   const handleLangClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
-
+/*dskewl*/
     setEffect({
       x: rect.left + rect.width / 2,
       y: rect.top + rect.height / 2,
