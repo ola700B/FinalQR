@@ -1,0 +1,133 @@
+@import "tailwindcss";
+@import "@fontsource/tajawal/400.css";
+@import "@fontsource/tajawal/700.css";
+@font-face {
+    font-family: "Greta";
+    src: url("./assets/fonts/Greta-BF64fae530446b2.otf") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Grata Arabic";
+    src: url("./assets/fonts/Greta\ Arabic\ Regular.ttf") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+}
+
+body {
+    font-family: "Greta", "Grata Arabic", sans-serif;
+}
+
+body {
+    font-family: "Grata Arabic", sans-serif;
+}
+
+body {
+    background: #13aa73;
+    margin: 0;
+}
+
+.perspective {
+    perspective: 1000px;
+}
+
+.transform-style-preserve-3d {
+    transform-style: preserve-3d;
+}
+
+.backface-hidden {
+    backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+    transform: rotateY(180deg);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes modalPop {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.animate-modal {
+    animation: modalPop 0.35s ease-out;
+}
+
+@keyframes float1 {
+    0% {
+        transform: translate(0, 0) scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-30px, -40px) scale(1.5);
+        opacity: 0;
+    }
+}
+
+@keyframes float2 {
+    0% {
+        transform: translate(0, 0) scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(30px, -30px) scale(1.5);
+        opacity: 0;
+    }
+}
+
+@keyframes float3 {
+    0% {
+        transform: translate(0, 0) scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-40px, 20px) scale(1.5);
+        opacity: 0;
+    }
+}
+
+.animate-float1 {
+    animation: float1 0.8s ease-out forwards;
+}
+
+.animate-float2 {
+    animation: float2 0.8s ease-out forwards;
+}
+
+.animate-float3 {
+    animation: float3 0.8s ease-out forwards;
+}
+
+@keyframes fall {
+    from {
+        transform: translateY(-150px);
+        opacity: 0.2;
+    }
+    to {
+        transform: translateY(0px);
+        opacity: 1;
+    }
+}
+
+.animate-fall {
+    animation: fall 1.2s ease-in-out;
+}
