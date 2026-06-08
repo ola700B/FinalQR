@@ -211,7 +211,7 @@ export default function MemoryGame() {
                 max-w-25
                 sm:max-w-30
                 md:max-w-35
-                lg:max-w-40
+                lg:max-w-80
                 aspect-3/4
                 cursor-pointer
               "

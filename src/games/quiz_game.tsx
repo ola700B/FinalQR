@@ -1,5 +1,7 @@
- import { useEffect, useState } from "react";
-
+import { useEffect, useState } from "react";
+import { useRef } from "react";
+import { useTranslation } from "react-i18next";
+import i18n from "../i18n";
 type Question = {
   question: string;
   options: string[];
@@ -8,19 +10,34 @@ type Question = {
 
 const questions: Question[] = [
   {
-    question: "What is the capital of France?",
-    options: ["London", "Berlin", "Paris", "Madrid"],
-    answer: "Paris",
+    question: "quiz_q1",
+    options: ["sidr", "silq", "olive", "caper"],
+    answer: "olive",
   },
   {
-    question: "What is 5 + 5?",
-    options: ["8", "10", "12", "15"],
-    answer: "10",
+    question: "quiz_q2",
+    options: ["leaf", "flower", "root", "stem"],
+    answer: "root",
   },
   {
-    question: "Which planet is known as the Red Planet?",
-    options: ["Earth", "Mars", "Venus", "Jupiter"],
-    answer: "Mars",
+    question: "quiz_q3",
+    options: ["chlorophyll", "protein", "cellulose", "starch"],
+    answer: "chlorophyll",
+  },
+  {
+    question: "quiz_q4",
+    options: ["root", "leaf", "seed", "fruit"],
+    answer: "leaf",
+  },
+  {
+    question: "quiz_q5",
+    options: ["sunlight", "plastic", "metal", "sand"],
+    answer: "sunlight",
+  },
+  {
+    question: "quiz_q6",
+    options: ["olive", "mint", "basil", "parsley"],
+    answer: "olive",
   },
 ];
 
@@ -31,7 +48,14 @@ export default function QuizGame() {
   const [mistakes, setMistakes] = useState(0);
   const [timeLeft, setTimeLeft] = useState(30);
   const [gameFinished, setGameFinished] = useState(false);
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const { t } = useTranslation();
+  const winAudio = useRef(new Audio("/sounds/win.mp3"));
 
+  const correctAudio = useRef(new Audio("/sounds/correct.mp3"));
+
+  const wrongAudio = useRef(new Audio("/sounds/wrong.mp3"));
+  const loseAudio = useRef(new Audio("/sounds/lose.mp3"));
   useEffect(() => {
     if (gameFinished) return;
 
@@ -53,6 +77,9 @@ export default function QuizGame() {
       setCurrentQuestion((prev) => prev + 1);
       setTimeLeft(30);
     } else {
+      winAudio.current.currentTime = 0;
+      winAudio.current.play();
+
       setGameFinished(true);
     }
   };
@@ -64,6 +91,9 @@ export default function QuizGame() {
     setMistakes((prev) => prev + 1);
 
     if (newLives <= 0) {
+      loseAudio.current.currentTime = 0;
+      loseAudio.current.play();
+
       setGameFinished(true);
       return;
     }
@@ -72,14 +102,30 @@ export default function QuizGame() {
   };
 
   const handleAnswer = (option: string) => {
-    if (option === questions[currentQuestion].answer) {
-      setScore((prev) => prev + 100);
-    } else {
-      handleWrongAnswer();
-      return;
-    }
+    setSelectedAnswer(option);
 
-    nextQuestion();
+    const isCorrect = option === questions[currentQuestion].answer;
+
+    setTimeout(() => {
+      if (option === questions[currentQuestion].answer) {
+        correctAudio.current.currentTime = 0;
+        correctAudio.current.play();
+
+        setTimeout(() => {
+          setScore((prev) => prev + 100);
+          nextQuestion();
+        }, 1000);
+      } else {
+        wrongAudio.current.currentTime = 0;
+        wrongAudio.current.play();
+
+        setTimeout(() => {
+          handleWrongAnswer();
+        }, 1000);
+      }
+
+      setSelectedAnswer(null);
+    }, 1000);
   };
 
   const restartGame = () => {
@@ -91,26 +137,59 @@ export default function QuizGame() {
     setGameFinished(false);
   };
 
-  const progress =
-    ((currentQuestion + 1) / questions.length) * 100;
+  const progress = ((currentQuestion + 1) / questions.length) * 100;
 
   if (gameFinished) {
     return (
-      <div className="min-h-screen bg-green-500 flex items-center justify-center p-4">
-        <div className="bg-white rounded-3xl p-8 md:p-12 text-center w-full max-w-md">
-          <h1 className="text-3xl md:text-5xl font-bold mb-4">
-            Game Finished
+      <div
+        className="
+          flex
+          items-center justify-center
+          min-h-screen
+          p-4
+          bg-green-500
+"
+      >
+        <div
+          className="
+            w-full max-w-md
+            p-8
+            rounded-3xl
+            text-center
+            bg-white
+            md:p-12
+"
+        >
+          <h1
+            className="
+              mb-4
+              text-3xl font-bold
+              md:text-5xl
+"
+          >
+            {t("game_finished")}
           </h1>
 
-          <p className="text-xl md:text-3xl mb-6">
-            Score: {score}
+          <p
+            className="
+              mb-6
+              text-xl
+              md:text-3xl
+"
+          >
+            {t("score")}: {score}
           </p>
 
           <button
             onClick={restartGame}
-            className="bg-green-500 text-white px-8 py-3 rounded-xl text-lg font-semibold"
+            className="
+              px-8 py-3
+              rounded-xl
+              text-white text-lg font-semibold
+              bg-green-500
+"
           >
-            Play Again
+            {t("play_again")}
           </button>
         </div>
       </div>
@@ -118,102 +197,255 @@ export default function QuizGame() {
   }
 
   return (
-    <div className="min-h-screen  px-4 py-6">
-      <div className="max-w-5xl mx-auto">
-
+    <div
+      className="
+        min-h-screen
+        px-4 py-6
+"
+    >
+      <div
+        className="
+          max-w-5xl
+          mx-auto
+"
+      >
         {/* Top Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-
-          <div className="bg-white rounded-2xl p-4 text-center shadow">
-            <p className="text-sm text-gray-500">Lives</p>
-            <p className="font-bold text-lg">
+        <div
+          className="
+            grid grid-cols-2
+            gap-3
+            mt-10
+            mb-6
+            md:grid-cols-4
+"
+        >
+          <div
+            className="
+              p-4
+              rounded-2xl
+              text-center
+              bg-white
+              shadow
+"
+          >
+            <p
+              className="
+                text-sm text-gray-500
+"
+            >
+              {t("lives")}
+            </p>
+            <p
+              className="
+                text-lg font-bold
+"
+            >
               {"❤️".repeat(lives)}
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl p-4 text-center shadow">
-            <p className="text-sm text-gray-500">Mistakes</p>
-            <p className="font-bold text-lg">
+          <div
+            className="
+              p-4
+              rounded-2xl
+              text-center
+              bg-white
+              shadow
+"
+          >
+            <p
+              className="
+                text-sm text-gray-500
+"
+            >
+              {t("mistakes")}
+            </p>
+            <p
+              className="
+                text-lg font-bold
+"
+            >
               {mistakes}/3
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl p-4 text-center shadow">
-            <p className="text-sm text-gray-500">Time</p>
-            <p className="font-bold text-lg">
+          <div
+            className="
+              p-4
+              rounded-2xl
+              text-center
+              bg-white
+              shadow
+"
+          >
+            <p
+              className="
+                text-sm text-gray-500
+"
+            >
+              {t("time")}
+            </p>
+            <p
+              className="
+                text-lg font-bold
+"
+            >
               {timeLeft}s
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl p-4 text-center shadow">
-            <p className="text-sm text-gray-500">Score</p>
-            <p className="font-bold text-lg">
+          <div
+            className="
+              p-4
+              rounded-2xl
+              text-center
+              bg-white
+              shadow
+"
+          >
+            <p
+              className="
+                text-sm text-gray-500
+"
+            >
+              {t("score")}
+            </p>
+            <p
+              className="
+                text-lg font-bold
+"
+            >
               {score}
             </p>
           </div>
-
         </div>
-  {/* Hint Button */}
-        <div className="flex justify-center mb-4">
-          <button className="bg-white rounded-2xl px-8 py-3 font-semibold shadow">
-            💡 Hint
+        {/* Hint Button */}
+        <div
+          className="
+            flex
+            justify-center
+            mb-4
+"
+        >
+          <button
+            className="
+              px-8 py-3
+              rounded-2xl
+              font-semibold
+              bg-white
+              shadow
+"
+          >
+            💡 {t("hint")}
           </button>
         </div>
 
         {/* Question Card */}
-        <div className="bg-white rounded-3xl shadow-lg p-4 md:p-8">
-
-          <h1 className="text-xl md:text-3xl font-bold text-center mb-8">
-            {questions[currentQuestion].question}
+        <div
+          dir={i18n.language === "ar" ? "rtl" : "ltr"}
+          className="
+            grid
+            gap-4
+            p-4
+            mt-20
+            rounded-3xl
+            bg-white
+            shadow-lg
+            md:p-8
+"
+        >
+          <h1
+            className="
+              mb-8
+              text-xl font-bold
+              text-center
+              md:text-3xl
+"
+          >
+            {t(questions[currentQuestion].question)}
           </h1>
 
-          <div className="grid gap-4">
-
-            {questions[currentQuestion].options.map(
-              (option, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleAnswer(option)}
+          <div
+            className="
+              grid
+              gap-4
+"
+          >
+            {questions[currentQuestion].options.map((option, index) => (
+              <button
+                key={index}
+                onClick={() => handleAnswer(option)}
+                disabled={selectedAnswer !== null}
+                className={`
+                  w-full
+                  p-4
+                  rounded-2xl
+                  text-base
+                  border
+                  transition
+                  md:p-5 md:text-xl
+                  ${i18n.language === "ar" ? "text-right" : "text-left"}
+                  ${
+                    selectedAnswer === option
+                      ? option === questions[currentQuestion].answer
+                        ? "bg-green-500 text-white border-green-500"
+                        : "bg-red-500 text-white border-red-500"
+                      : "border-gray-200 hover:bg-gray-100"
+                  }
+`}
+              >
+                <span
                   className="
-                    w-full
-                    border
-                    border-gray-200
-                    rounded-2xl
-                    p-4
-                    md:p-5
-                    text-left
-                    text-base
-                    md:text-xl
-                    hover:bg-gray-100
-                    transition
-                  "
+                    mr-2
+                    font-bold
+"
                 >
-                  <span className="font-bold mr-2">
-                    {String.fromCharCode(65 + index)}.
-                  </span>
-                  {option}
-                </button>
-              )
-            )}
-
+                  {String.fromCharCode(65 + index)}.
+                </span>
+                {t(option)}
+              </button>
+            ))}
           </div>
 
           {/* Progress Bar */}
-          <div className="mt-8">
-            <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden">
+          <div
+            className="
+              mt-8
+"
+          >
+            <div
+              className="
+                overflow-hidden
+                w-full h-4
+                rounded-full
+                bg-gray-200
+"
+            >
               <div
-                className="h-full bg-green-500 transition-all duration-500"
+                className="
+                  h-full
+                  bg-green-500
+                  transition-all duration-500
+"
                 style={{
                   width: `${progress}%`,
                 }}
               />
             </div>
 
-            <p className="text-center mt-2 text-sm text-gray-500">
-              Question {currentQuestion + 1} of {questions.length}
+            <p
+              className="
+                mt-2
+                text-sm text-gray-500
+                text-center
+"
+            >
+              {t("question_progress", {
+                current: currentQuestion + 1,
+                total: questions.length,
+              })}
             </p>
           </div>
-
         </div>
       </div>
     </div>
