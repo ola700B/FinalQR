@@ -104,8 +104,6 @@ export default function QuizGame() {
   const handleAnswer = (option: string) => {
     setSelectedAnswer(option);
 
-    const isCorrect = option === questions[currentQuestion].answer;
-
     setTimeout(() => {
       if (option === questions[currentQuestion].answer) {
         correctAudio.current.currentTime = 0;
