@@ -2,6 +2,13 @@
 @import "@fontsource/tajawal/400.css";
 @import "@fontsource/tajawal/700.css";
 @font-face {
+    font-family: 'CairoLocal';
+    src: url('./assets/fonts/Cairo-VariableFont_slnt,wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+}
+
+@font-face {
     font-family: "Greta";
     src: url("./assets/fonts/Greta-BF64fae530446b2.otf") format("woff2");
     font-weight: 400;

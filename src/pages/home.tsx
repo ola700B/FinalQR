@@ -103,6 +103,7 @@ export default function Home() {
               lg:text-xl
               tracking-wide
               mt-1
+              mb-10
 "
           >
             Member of Qatar Foundation
